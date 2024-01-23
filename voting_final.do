@@ -6,6 +6,10 @@ gen chosen_party = .
 foreach var in p_1 p_2 p_3 p_4 p_5 {
     replace chosen_party = `var' if `var' > chosen_party | missing(chosen_party)
 }
+* Calcular la distancia de proximidad de Downs
+foreach var in p_1 p_2 p_3 p_4 p_5 {
+	gen distance_`var' = -(v_i - `var')^2
+}
 
 gen previous_chosen_party = chosen_party
 
@@ -20,9 +24,13 @@ local media_effect_p_5 = (runiform() - 0.5) * 2
 local continue = 1
 local iteration = 0
 while `continue' {
+	
 	local iteration = `iteration' + 1
 	
-	display "Iteracion: " `iteration'
+	twoway scatter p_1 p_2 p_3 p_4 p_5 v_i, title("Iteración `iteration'") ///
+      ytitle("Variables p_1 a p_5") ///
+        name("grafico`iteration'", replace)
+		
 	
 	replace p_1 = p_1 + `media_effect_p_1'
 	replace p_2 = p_2 + `media_effect_p_2'
@@ -32,27 +40,43 @@ while `continue' {
 	
 	 * Calcular la distancia de proximidad de Downs
 	foreach var in p_1 p_2 p_3 p_4 p_5 {
-		gen distance_`var' = -(v_i - `var')^2
+		local distance_`var' = -(v_i - `var')^2
 	}
 	
     * Reevaluar la preferencia de voto después de la proximidad de Downs
     foreach var in p_1 p_2 p_3 p_4 p_5 {
-        replace chosen_party = `var' if distance_`var' == min(distance_p_1, distance_p_2, distance_p_3, distance_p_4, distance_p_5)
+        replace chosen_party = `var' if `var' > chosen_party
+		
+		putexcel set "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_final.xlsx", sheet("Iteracion`iteration'") modify
+		
+	putexcel A1 = p_1
+	putexcel B1 = p_2
+	putexcel C1 = p_3
+	putexcel D1 = p_4
+	putexcel E1 = p_5
     }
 
+	// Graficar las variables p_1 a p_5 de manera dinámica
+  *  twoway scatter p_1 p_2 p_3 p_4 p_5, title("Iteración `iteration'") ///
+      ytitle("Variables p_1 a p_5") ///
+        name("grafico`iteration'", replace)
+		
+				  
     * Verificar si algún partido alcanza mayoría absoluta
     local majority = _N/2+1
     foreach var in p_1 p_2 p_3 p_4 p_5 {
         count if chosen_party == `var'
-        if r(N) > `majority' {
+
+	
+        if r(N) > `majority' & `iteration' >= 5 {
             display "Mayoría absoluta alcanzada por partido `var'"
             local continue = 0
             break
         }
     }
-	export excel p_1 p_2 p_3 p_4 p_5 using "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_final.xlsx", replace
+	
     count if chosen_party != previous_chosen_party
-    if r(N) == 0 {
+    if r(N) == 0 & `iteration' >= 5 {
         display "Ningún agente cambió de opinión. Terminando la simulación."
         local continue = 0
     }
@@ -61,12 +85,9 @@ while `continue' {
     replace previous_chosen_party = chosen_party
 
     * Si no hay cambios o se alcanza la mayoría, terminar la simulación
-    if `continue' == 0 {
+    if `continue' == 0 & `iteration' >= 5  {
         break
     }
 }
 
 display "Numero total de iteraciones", `iteration'
-
-
-
