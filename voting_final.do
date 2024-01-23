@@ -30,13 +30,18 @@ while `continue' {
 	replace p_4 = p_4 + `media_effect_p_4'
 	replace p_5 = p_5 + `media_effect_p_5'
 	
-    * Reevaluar la preferencia de voto después del efecto de los medios
+	 * Calcular la distancia de proximidad de Downs
+	foreach var in p_1 p_2 p_3 p_4 p_5 {
+		gen distance_`var' = -(v_i - `var')^2
+	}
+	
+    * Reevaluar la preferencia de voto después de la proximidad de Downs
     foreach var in p_1 p_2 p_3 p_4 p_5 {
-        replace chosen_party = `var' if `var' > chosen_party
+        replace chosen_party = `var' if distance_`var' == min(distance_p_1, distance_p_2, distance_p_3, distance_p_4, distance_p_5)
     }
 
     * Verificar si algún partido alcanza mayoría absoluta
-    local majority = _N/2
+    local majority = _N/2+1
     foreach var in p_1 p_2 p_3 p_4 p_5 {
         count if chosen_party == `var'
         if r(N) > `majority' {
@@ -45,7 +50,7 @@ while `continue' {
             break
         }
     }
-
+	export excel p_1 p_2 p_3 p_4 p_5 using "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_final.xlsx", replace
     count if chosen_party != previous_chosen_party
     if r(N) == 0 {
         display "Ningún agente cambió de opinión. Terminando la simulación."
@@ -63,5 +68,5 @@ while `continue' {
 
 display "Numero total de iteraciones", `iteration'
 
-export excel using "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_final.xlsx", replace
+
 
