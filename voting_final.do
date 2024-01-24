@@ -28,39 +28,35 @@ while `continue' {
 	local iteration = `iteration' + 1
 	
 	twoway scatter p_1 p_2 p_3 p_4 p_5 v_i, title("Iteración `iteration'") ///
-      ytitle("Variables p_1 a p_5") ///
+      ytitle("Variables p_1 a p_5") xtitle("Voto inicial de cada agente") ///
         name("grafico`iteration'", replace)
 		
-	
 	replace p_1 = p_1 + `media_effect_p_1'
 	replace p_2 = p_2 + `media_effect_p_2'
 	replace p_3 = p_3 + `media_effect_p_3'
 	replace p_4 = p_4 + `media_effect_p_4'
 	replace p_5 = p_5 + `media_effect_p_5'
 	
-	 * Calcular la distancia de proximidad de Downs
+	 * Aplicamos la distancia de proximidad de Downs
 	foreach var in p_1 p_2 p_3 p_4 p_5 {
 		local distance_`var' = -(v_i - `var')^2
+		replace chosen_party = distance_`var' if distance_`var' == min(distance_p_1, distance_p_2, distance_p_3, distance_p_4, distance_p_5)
 	}
 	
-    * Reevaluar la preferencia de voto después de la proximidad de Downs
+    * Reevaluar la preferencia de voto después de la proximidad de Downs y efecto de los medios
     foreach var in p_1 p_2 p_3 p_4 p_5 {
         replace chosen_party = `var' if `var' > chosen_party
 		
-		putexcel set "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_final.xlsx", sheet("Iteracion`iteration'") modify
+		putexcel set "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_step.xlsx", sheet("Iteracion`iteration'") modify
 		
 	putexcel A1 = p_1
 	putexcel B1 = p_2
 	putexcel C1 = p_3
 	putexcel D1 = p_4
 	putexcel E1 = p_5
-    }
 
-	// Graficar las variables p_1 a p_5 de manera dinámica
-  *  twoway scatter p_1 p_2 p_3 p_4 p_5, title("Iteración `iteration'") ///
-      ytitle("Variables p_1 a p_5") ///
-        name("grafico`iteration'", replace)
-		
+    putexcel close
+    }
 				  
     * Verificar si algún partido alcanza mayoría absoluta
     local majority = _N/2+1
@@ -91,3 +87,6 @@ while `continue' {
 }
 
 display "Numero total de iteraciones", `iteration'
+
+export excel p_1 p_2 p_3 p_4 p_5 using "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_final.xlsx", replace
+
