@@ -1,5 +1,5 @@
 * Paso 1: Importar datos
-import excel using "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/CIS_data.xlsx", firstrow clear
+import excel using "CIS_data.xlsx", firstrow clear
 
 * Paso 2: Generar preferencias de voto iniciales
 gen chosen_party = .
@@ -47,7 +47,7 @@ while `continue' {
     foreach var in p_1 p_2 p_3 p_4 p_5 {
         replace chosen_party = `var' if `var' > chosen_party
 		
-		putexcel set "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_step.xlsx", sheet("Iteracion`iteration'") modify
+		putexcel set "out_step.xlsx", sheet("Iteracion`iteration'") modify
 		
 	putexcel A1 = p_1
 	putexcel B1 = p_2
@@ -88,5 +88,5 @@ while `continue' {
 
 display "Numero total de iteraciones", `iteration'
 
-export excel p_1 p_2 p_3 p_4 p_5 using "C:/Users/Nuria/Desktop/UNI/2023-2024_UNI/EM/Proyecto/STATA/out_final.xlsx", replace
+export excel p_1 p_2 p_3 p_4 p_5 using "out_final.xlsx", replace
 
