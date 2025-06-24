@@ -27,11 +27,11 @@ The model simulates how agents’ political preferences evolve over time based o
 
 A sequence of scatter plots generated in Stata visually depicts how agents’ political preferences shift over at least five iterations. Below are some sample outputs:
 
-<img src="Resultados_graficos/Iteracion1.png" width="280"/>
-<img src="Resultados_gráficos/Iteración2.png" width="280"/>
-<img src="Resultados_gráficos/Iteración3.png" width="280"/>
-<img src="Resultados_gráficos/Iteración4.png" width="280"/>
-<img src="Resultados_gráficos/Iteración5.png" width="280"/>
+<img src="Resultados_gráficos/Iteracion1.PNG" width="280"/>
+<img src="Resultados_gráficos/Iteración2.PNG" width="280"/>
+<img src="Resultados_gráficos/Iteración3.PNG" width="280"/>
+<img src="Resultados_gráficos/Iteración4.PNG" width="280"/>
+<img src="Resultados_gráficos/Iteración5.PNG" width="280"/>
 
 As shown, agents change their preferred party over time. In the final step, **party 5** reaches an absolute majority.
 
