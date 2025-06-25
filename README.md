@@ -1,7 +1,7 @@
 # SEMINAR: Agent-Based Modeling with Stata
 
-**Author:** Nuria Manzano Mata
-**Grade:** 10
+- **Author:** Nuria Manzano Mata
+- **Grade:** 10 (with highest honors)
 
 ## Project Overview
 
